@@ -14,20 +14,23 @@ def find_start():
         for c in range(Grid.col_num):
             if Grid.get(r, c) == '+': return (r,c)
 
+def unexplored_edges(shape):
+    for corner in shape:
+        if any(shape[corner].values()): return True
+    return False
+
 def split_component():  
-    # find top-left corner in first unmarked component
     start = find_start()
-    shape = {start: directions(start)}
-    while unexplored_edges(shape):    # build shape as list of
-                                      # corners & valencies
+    component = {start: Grid.directions(start)}
+    while unexplored_edges(component):    # build up list of corners & valencies until all connections explored
         next_lvl = dict()
-        for corner in shape:
+        for corner in component:
             for dir in ('u', 'r', 'd', 'l'):
-                if shape[corner][dir] == 0: continue
-                nxt_corner, dirs = find_next(corner, dir)
-                if nxt_corner in next_lvl:
-                    next_lvl[nxt_corner] = remove_incoming(next_lvl[nxt_corner], dir)
-                else: next_lvl[nxt_corner] = dirs
-                shape[corner][dir] = 0
-        shape.update(next_lvl)
-    return shape.keys()
+                if component[corner][dir] == 0: continue
+                next_corner, dirs = find_next(corner, dir)
+                if next_corner in next_lvl:
+                    next_lvl[next_corner] = remove_incoming(next_lvl[next_corner], dir)
+                else: next_lvl[next_corner] = dirs
+                component[corner][dir] = 0
+        component.update(next_lvl)
+    return component.keys()
