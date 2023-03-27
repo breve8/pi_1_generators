@@ -28,8 +28,8 @@ class Grid():
 
     def directions(self, corner):    # data returned represents outgoing edges at a vertex
         row, col = corner
-        max_row = row_num - 1
-        max_col = col_num - 1
+        max_row = self.row_num - 1
+        max_col = self.col_num - 1
         u = 1 if row > 0 and self.get(row-1, col) == '|' else 0
         d = 1 if row < max_row and self.get(row+1, col) == '|' else 0
         l = 1 if col > 0 and self.get(row, col-1) == '-' else 0
@@ -63,7 +63,7 @@ class Grid():
             if r_inc < 0 or c_inc < 0 or r_inc >= self.row_num or c_inc >= self.col_num:
                 printf("could not find next corner from {curr} in direction {dir}")
                 break
-            if is_corner(r_inc, c_inc):
+            if self.is_corner(r_inc, c_inc):
                 corner = (r_inc, c_inc)
                 dirs = Grid.remove_incoming(self.directions(corner), dir)
                 return corner, dirs
