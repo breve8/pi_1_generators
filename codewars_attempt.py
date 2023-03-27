@@ -1,4 +1,3 @@
-from sys import argv
 
 class Grid():   # singleton wrapper class for state of grid
     grid = []
@@ -120,7 +119,9 @@ def find_top_left(component):
     order = list(component)
     for corner in order:
         dirs = directions(corner)
-        if dirs['r'] and dirs['d']: return corner
+        if dirs['r'] and dirs['d']:
+            # add check for edges not to be included in any more cycles here
+            return corner
     return False
     # return first coord in lex order (persist this?) that has a right outbound
     # edge (these will be stripped at start of shape traversal), False if none
@@ -133,7 +134,7 @@ def shapes(component):
         print(shape)
         dir, shape_side = 'r', 'd'
         nxt = next_vtx(component, start, dir)
-        Grid.clear((start[0], start[1]+1))
+        Grid.clear((start[0], start[1]+1))  # change this to not mutate grid, maybe keep set of edges that can't be included in any more cycles by induction from "outermost"
         Grid.clear((nxt[0], nxt[1]-1))
         while nxt != start:
             # print(shape)
@@ -231,6 +232,4 @@ def draw(cycle):
 
 # uncomment next line if you prefer raw error messages
 # raw_errors = True
-break_pieces('\n         +------------+--+      +--+\n         |            |  |      |  |\n         | +-------+  |  |      |  |\n         | |       |  |  +------+  |\n         | |       |  |            |\n         | |       |  |    +-------+\n         | +-------+  |    |        \n +-------+            |    |        \n |       |            |    +-------+\n |       |            |            |\n +-------+            |            |\n         |            |            |\n    +----+---+--+-----+------------+\n    |    |   |  |     |            |\n    |    |   |  +-----+------------+\n    |    |   |                     |\n    +----+---+---------------------+\n    |    |                         |\n    |    | +----+                  |\n+---+    | |    |     +------------+\n|        | |    |     |             \n+--------+-+    +-----+             ')
-
-# test 2
+break_pieces('\n+-------+ +----------+\n|       | |          |\n| +-+ +-+ +-+    +-+ |\n+-+ | |     |  +-+ +-+\n    | +-----+--+\n+-+ |          +-+ +-+\n| +-+  +----+    | | |\n| |    |    |    +-+ |\n| +----++ +-+        |\n|       | |          |\n+-------+ +----------+')
