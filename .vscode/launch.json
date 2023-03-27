@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["test_grid_1.txt"]
+            "justMyCode": false,
+            "args": ["test_grid_big.txt"]
         }
     ]
 }

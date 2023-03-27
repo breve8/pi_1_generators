@@ -4,7 +4,7 @@ from grid import Grid
 
 def extract_connected_components(grid: Grid):
     cpts = []
-    while not grid.has_unmarked_components():
+    while not grid.all_components_marked():
         cpts.append(split_component(grid))
         for (r, c) in cpts[-1]: grid.set(r, c, 'x') # marking corners on checked component so it won't be detected again
     return cpts
@@ -82,4 +82,12 @@ def navigate(grid, corner, incoming, shape_side):
     return(None, None)
 
 def list_simple_gens(grid):
-    return [generating_cycles(cpt, grid) for cpt in extract_connected_components(grid)]
+    components = extract_connected_components(grid)
+    rtn = []
+    for cpt in components:
+        rtn += generating_cycles(cpt, grid)
+    return rtn
+
+
+if __name__ == "__main__":
+    pass

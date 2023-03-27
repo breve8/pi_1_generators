@@ -2,9 +2,11 @@ class Grid():
     def __init__(self, txt_input):
         if txt_input[0] == '\n': txt_input = txt_input[1:] # codewars sample inputs start with newline?
         rows = txt_input.split('\\n')
+        self.row_num = len(rows)
+        self.col_num = max(len(row) for row in rows)
         self.grid = list(map(list, rows))
-        self.row_num = len(self.grid)
-        self.col_num = len(self.grid[0])
+        for row in self.grid:
+            row += [' '] * (self.col_num - len(row))
 
     def __str__(self):
         return '\n'.join(''.join(row) for row in self.grid)
@@ -21,10 +23,8 @@ class Grid():
 
     def rows(self): return self.grid
 
-
-    def has_unmarked_components(self):
+    def all_components_marked(self):
         return all(all(c != '+' for c in row) for row in self.grid)
-
 
     def directions(self, corner):    # data returned represents outgoing edges at a vertex
         row, col = corner
