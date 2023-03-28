@@ -10,6 +10,17 @@ class Grid():
 
     def __str__(self):
         return '\n'.join(''.join(row) for row in self.grid)
+    
+    @staticmethod
+    def pad_str(n: int, leading=2):
+        return str(n).zfill(leading)
+
+    def debug_print(self):
+        out = ['  ' + ''.join(map(self.pad_str, range(self.col_num)))]
+        for r in range(self.row_num):
+            out += [self.pad_str(r) + ' '.join(char for char in self.grid[r]) + '  ' + self.pad_str(r)]
+        out += ['  ' + ''.join(map(self.pad_str, range(self.col_num)))]
+        return '\n'.join(out)
 
     def get(self, row, column):
         return self.grid[row][column]
