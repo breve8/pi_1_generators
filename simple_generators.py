@@ -10,5 +10,5 @@ with open(sys.argv[1]) as file:
         # todo: draw connected components
         print("\nsmallest simple generators of fundamental group represented by vertex cycles:\n")
         cycles = compute_generators.list_simple_gens(grid)
-        print(cycles)
+        print('\n'.join(map(str, cycles)))
         # print('\n\n\n')

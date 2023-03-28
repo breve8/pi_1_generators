@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "args": ["test_grid_big.txt"]
+            "args": ["provided_test_cases.txt"]
         }
     ]
 }

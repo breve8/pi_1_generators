@@ -41,11 +41,11 @@ class Grid():
         row, col = corner
         max_row = self.row_num - 1
         max_col = self.col_num - 1
-        u = 1 if row > 0 and self.get(row-1, col) == '|' else 0
-        d = 1 if row < max_row and self.get(row+1, col) == '|' else 0
-        l = 1 if col > 0 and self.get(row, col-1) == '-' else 0
-        r = 1 if col < max_col and self.get(row, col+1) == '-' else 0
-        return {'u':u,'r':r,'d':d,'l':l}
+        u = 1 if row > 0 and self.get(row-1, col) in ('|', '+', 'x') else 0
+        d = 1 if row < max_row and self.get(row+1, col) in ('|', '+', 'x') else 0
+        l = 1 if col > 0 and self.get(row, col-1) in ('-', '+', 'x') else 0
+        r = 1 if col < max_col and self.get(row, col+1) in ('-', '+', 'x') else 0
+        return {'u':u, 'r':r, 'd':d, 'l':l}
 
     @staticmethod
     def opposite(dir):

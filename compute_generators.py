@@ -46,8 +46,7 @@ def next_vtx(cpt, curr, dir, max_row, max_col):
     if dir == 'u':
         return (max(x for x in range(r - 1, -1, -1) if (x, c) in cpt), c)
 
-def cycle_start(component, grid, exclude):
-    order = list(component) # lists in lexicographic order
+def cycle_start(order, grid, exclude):
     for corner in order:
         dirs = grid.directions(corner)
         if dirs['r'] and dirs['d'] and corner not in exclude: return corner
@@ -55,14 +54,22 @@ def cycle_start(component, grid, exclude):
 
 def generating_cycles(component, grid):
     rtn = set() # set of vertex cycles, convert to list of shapes (some of which might be the same shape, but not vtx set) later
-    start_points = set()    # this construction forces any vertex in the grid to be the 'start' (top-left) point of at most one cycle, so we record them as they're found to stop the same cycle being recorded twice
-    start = cycle_start(component, grid, start_points)
-    while start:
-        shape = [start]
-        start_points.add(start) # todo: error check
+    non_start_points = set()    # stores coordinates of corners that should be excluded as start points of potential cycles, either because they have already been used or lie on a "free face" of the boundary
+    component = sorted(list(component)) # lists in lexicographic order
+    start_point = cycle_start(component, grid, non_start_points)
+    bdry = boundary(component, grid)
+    while start_point:
+        shape = [start_point]
+        non_start_points.add(start_point)
         dir, shape_side = 'r', 'd'
-        nxt = next_vtx(component, start, dir, grid.row_num, grid.col_num)
-        while nxt != start:
+        nxt = next_vtx(component, start_point, dir, grid.row_num, grid.col_num)
+        while nxt != start_point:
+            if nxt in non_start_points and shape_side == 'r':   # cycle already counted
+                shape = None
+                break
+            if nxt in bdry and dir == 'l' and \
+                set(bdry[nxt]) == {'d', 'r'}:    # indented free face in the boundary
+                non_start_points.add(nxt)
             shape.append(nxt)
             dir, shape_side = navigate(grid, nxt, dir, shape_side)
             if not dir:
@@ -70,7 +77,7 @@ def generating_cycles(component, grid):
                 break
             nxt = next_vtx(component, nxt, dir, grid.row_num, grid.col_num)
         if shape: rtn.add(tuple(shape))
-        start = cycle_start(component, grid, start_points)
+        start_point = cycle_start(component, grid, non_start_points)
     return rtn
 
 def navigate(grid, corner, incoming, shape_side):
@@ -81,13 +88,28 @@ def navigate(grid, corner, incoming, shape_side):
     print('could not navigate')
     return(None, None)
 
+def navigate_boundary(grid, corner, incoming, int_side):
+    outgoing = grid.remove_incoming(grid.directions(corner), incoming)
+    if outgoing[grid.opposite(int_side)]: return grid.opposite(int_side), incoming
+    if outgoing[incoming]: return incoming, int_side
+    if outgoing[int_side]: return int_side, grid.opposite(incoming)
+
+def boundary(component, grid):
+    # assume component is list of vertices in lex order, return set of vertices in component boundary, together with the pair of incident edges at each that form a boundary segment
+    start = component[0]
+    bdry = {start:['d', 'r']}
+    dir, int_side = 'r', 'd'
+    nxt = next_vtx(component, start, dir, grid.row_num, grid.col_num)
+    while nxt != start:
+        bdry[nxt] = [grid.opposite(dir)]
+        dir, int_side = navigate_boundary(grid, nxt, dir, int_side)
+        bdry[nxt].append(dir)
+        nxt = next_vtx(component, nxt, dir, grid.row_num, grid.col_num)
+    return bdry
+
 def list_simple_gens(grid):
     components = extract_connected_components(grid)
     rtn = []
     for cpt in components:
         rtn += generating_cycles(cpt, grid)
     return rtn
-
-
-if __name__ == "__main__":
-    pass
