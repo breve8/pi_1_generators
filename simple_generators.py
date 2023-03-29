@@ -1,6 +1,7 @@
 import sys
 from grid import Grid
-import compute_generators
+from compute_generators import list_simple_gens
+from draw import draw_cycle
 
 with open(sys.argv[1]) as file:
     for line in file:
@@ -9,6 +10,8 @@ with open(sys.argv[1]) as file:
         print(grid.debug_print())
         # todo: draw connected components
         print("\nsmallest simple generators of fundamental group represented by vertex cycles:\n")
-        cycles = compute_generators.list_simple_gens(grid)
+        cycles = list_simple_gens(grid)
         print('\n'.join(map(str, cycles)))
-        # print('\n\n\n')
+        print('\ndrawing the cycles:\n')
+        for c in cycles: print(draw_cycle(list(c)))
+        print('\n\n')

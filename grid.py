@@ -1,3 +1,16 @@
+def opposite(dir):
+    if dir == 'r': return 'l'
+    if dir == 'l': return 'r'
+    if dir == 'u': return 'd'
+    if dir == 'd': return 'u'
+    if dir == 'hor': return 'vert'
+    if dir == 'vert': return 'hor'
+    print(f'invalid direction: {dir}')
+
+def remove_incoming(dirs, dir):
+    dirs[opposite(dir)] = 0
+    return dirs
+
 class Grid():
     def __init__(self, txt_input):
         if txt_input[0] == '\n': txt_input = txt_input[1:] # codewars sample inputs start with newline?
@@ -47,22 +60,6 @@ class Grid():
         r = 1 if col < max_col and self.get(row, col+1) in ('-', '+', 'x') else 0
         return {'u':u, 'r':r, 'd':d, 'l':l}
 
-    @staticmethod
-    def opposite(dir):
-        if dir == 'r': return 'l'
-        if dir == 'l': return 'r'
-        if dir == 'u': return 'd'
-        if dir == 'd': return 'u'
-        if dir == 'hor': return 'vert'
-        if dir == 'vert': return 'hor'
-        printf('invalid direction: {dir}')
-
-
-    @staticmethod
-    def remove_incoming(dirs, dir):
-        dirs[Grid.opposite(dir)] = 0
-        return dirs
-
     def find_next_corner(self, curr, dir):
         r, c = curr
         axis_to_step = 1 if dir in ('u', 'd') else 0
@@ -72,11 +69,11 @@ class Grid():
             r_inc = r + axis_to_step*i
             c_inc = c + (1 - axis_to_step)*i
             if r_inc < 0 or c_inc < 0 or r_inc >= self.row_num or c_inc >= self.col_num:
-                printf("could not find next corner from {curr} in direction {dir}")
+                raise ValueError(f"could not find next corner from {curr} in direction {dir}")
                 break
             if self.is_corner(r_inc, c_inc):
                 corner = (r_inc, c_inc)
-                dirs = Grid.remove_incoming(self.directions(corner), dir)
+                dirs = remove_incoming(self.directions(corner), dir)
                 return corner, dirs
             # todo: change return type?
             i += inc
