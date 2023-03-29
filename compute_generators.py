@@ -1,18 +1,19 @@
-# functions to detect cycles in the figure currently filling Grid (instantiated elsewhere); note this implementation mutates the grid, assuming for now that module will be invoked once per grid-instantiation
+# functions to detect cycles in the figure currently filling Grid (instantiated elsewhere); note this implementation changes the grid in a small way (marking corners), assuming for now that module will be invoked once per grid-instantiation
 
 from grid import Grid, opposite, remove_incoming
+
+def list_simple_gens(grid):
+    components = extract_connected_components(grid)
+    rtn = []
+    for cpt in components: rtn += generating_cycles(cpt, grid)
+    return rtn
 
 def extract_connected_components(grid: Grid):
     cpts = []
     while not grid.all_components_marked():
         cpts.append(split_component(grid))
-        for (r, c) in cpts[-1]: grid.set(r, c, 'x') # marking corners on checked component so it won't be detected again
+        for (r, c) in cpts[-1]: grid.mark_corner(r, c) # marking corners on checked component so it won't be detected again
     return cpts
-
-def find_start(grid):
-    for r in range(grid.row_num):
-        for c in range(grid.col_num):
-            if grid.get(r, c) == '+': return (r,c)
 
 def unexplored_edges(shape):
     for corner in shape:
@@ -20,7 +21,7 @@ def unexplored_edges(shape):
     return False
 
 def split_component(grid: Grid):  
-    start = find_start(grid)
+    start = grid.first_unmarked()
     component = {start: grid.directions(start)}     # store incident edges to explore for each vertex found in the connected component
     while unexplored_edges(component):    # build up list of corners & valencies until all connections explored
         next_lvl = dict()
@@ -109,9 +110,3 @@ def boundary(component, grid):
         bdry[nxt].append(dir)
         nxt = next_vtx(component, nxt, dir, grid.row_num, grid.col_num)
     return bdry
-
-def list_simple_gens(grid):
-    components = extract_connected_components(grid)
-    rtn = []
-    for cpt in components: rtn += generating_cycles(cpt, grid)
-    return rtn

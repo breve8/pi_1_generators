@@ -41,8 +41,15 @@ class Grid():
     def is_corner(self, row, column):
         return self.get(row, column) in ('+', 'x')
 
-    def set(self, row, column, val): self.grid[row][column] = val
+    def mark_corner(self, row, column):
+        if not self.is_corner(row, column): raise ValueError(f"tried to mark ({row},{column}), not a corner")
+        self.grid[row][column] = 'x'
 
+    def first_unmarked(self):
+        for r in range(self.row_num):
+            for c in range(self.col_num):
+                if self.get(r, c) == '+': return (r,c)
+        
     def clear(self, point): self.set(point[0], point[1], ' ')
 
     def rows(self): return self.grid
